@@ -59,7 +59,7 @@ Releases
 
 Click on one of the following links to get to the corresponding release page:
 
-* [2016.6.9](https://github.com/fracpete/weka-option-utils/releases/download/v2016.6.9)
+* [2016.6.9](https://github.com/fracpete/weka-option-utils/releases/v2016.6.9)
 
 
 Maven
