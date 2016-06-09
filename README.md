@@ -53,3 +53,32 @@ method which generates the help on the command-line.
   }
 ```
 
+
+Releases
+--------
+
+Click on one of the following links to get to the corresponding release page:
+
+* [2016.6.9](https://github.com/fracpete/weka-option-utils/releases/download/v2016.6.9)
+
+
+Maven
+-----
+
+Add the following dependency in your `pom.xml` to include the package:
+
+```xml
+    <dependency>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>weka-option-utils</artifactId>
+      <version>2016.6.9</version>
+      <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>nz.ac.waikato.cms.weka</groupId>
+          <artifactId>weka-dev</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+```
+
