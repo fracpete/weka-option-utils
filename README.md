@@ -71,7 +71,7 @@ Add the following dependency in your `pom.xml` to include the package:
     <dependency>
       <groupId>com.github.fracpete</groupId>
       <artifactId>weka-option-utils</artifactId>
-      <version>2016.6.9</version>
+      <version>2016.8.22</version>
       <type>jar</type>
       <exclusions>
         <exclusion>
