@@ -120,7 +120,7 @@ public abstract class AbstractMySVM
   /**
    * Returns the capacity parameter.
    *
-   * @return the current value
+   * @return the current value (value >= 0.0)
    * @see #m_Capacity
    */
   public double getCapacity() {
@@ -130,7 +130,7 @@ public abstract class AbstractMySVM
   /**
    * Sets the capacity parameter.
    *
-   * @param value the new value
+   * @param value the new value (value >= 0.0)
    * @see #m_Capacity
    */
   public void setCapacity(double value) {
@@ -146,7 +146,7 @@ public abstract class AbstractMySVM
    * @see #m_Capacity
    */
   public String capacityTipText() {
-    return "The capacity parameter.";
+    return "The capacity parameter; value >= 0.0.";
   }
 
   /**

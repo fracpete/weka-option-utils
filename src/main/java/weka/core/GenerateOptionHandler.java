@@ -623,6 +623,7 @@ public class GenerateOptionHandler
     String		outStr;
     int			i;
     boolean 		fromSuper;
+    String		help;
 
     result = null;
     code   = new StringBuilder();
@@ -786,7 +787,7 @@ public class GenerateOptionHandler
       else
 	code.append("   * Returns the current value for " + o.property + ".\n");
       code.append("   *\n");
-      code.append("   * @return the current value\n");
+      code.append("   * @return the current value" + (o.constraint.isEmpty() ? "" : " (" + o.constraint + ")") + "\n");
       code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public " + trimClass(o.type) + " get" + upFirst(o.property) + "() {\n");
@@ -801,7 +802,7 @@ public class GenerateOptionHandler
       else
 	code.append("   * Sets the new value for " + o.property + ".\n");
       code.append("   *\n");
-      code.append("   * @param value the new value\n");
+      code.append("   * @param value the new value" + (o.constraint.isEmpty() ? "" : " (" + o.constraint + ")") + "\n");
       code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public void set" + upFirst(o.property) + "(" + trimClass(o.type) + " value) {\n");
@@ -816,6 +817,12 @@ public class GenerateOptionHandler
       code.append("  }\n");
 
       // tiptext
+      help = upFirst(o.help);
+      if (help.endsWith(""))
+        help = help.substring(0, help.length() - 1);
+      if (!o.constraint.isEmpty())
+        help += "; " + o.constraint;
+      help += ".";
       code.append("\n");
       code.append("  /**\n");
       code.append("   * Returns the help string for " + o.property + ".\n");
@@ -824,7 +831,7 @@ public class GenerateOptionHandler
       code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public String " + o.property + "TipText() {\n");
-      code.append("    return \"" + upFirst(o.help) + "\";\n");
+      code.append("    return \"" + help + "\";\n");
       code.append("  }\n");
     }
 
