@@ -101,7 +101,7 @@ An `option` itself has the following properties:
 * `default`: the string with the default value, eg `1.0` or `new some.pkg.SomeClass()`
 * `help`: the help string to display in the user interface and to list on the commandline
 
-This [example configuration](src/main/resources/mysvm.json)) generates this
+This [example configuration](src/main/resources/mysvm.json) generates this
 [Java source file](src/main/resources/AbstractMySVM.java).
 
 In case you include this artifact in your Maven project, you can add a build
