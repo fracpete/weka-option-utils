@@ -83,7 +83,7 @@ optional arguments:
   --verbose              If enabled, outputs verbose debugging output.
 ```
 
-The JSON file structure is very simple ([see example](src/main/resources/mysvm.json)):
+The JSON file structure is very simple:
 * `name`: the name of the class, eg `MySVM`
 * `package` (optional): the Java package for the class, eg `weka.classifiers.functions`
 * `prefix` (optional): prefix to use for the class, eg `Abstract`
@@ -100,6 +100,9 @@ An `option` itself has the following properties:
 * `flag`: the string to use as command-line option (all lower case, no leading `-`), eg `capacity`
 * `default`: the string with the default value, eg `1.0` or `new some.pkg.SomeClass()`
 * `help`: the help string to display in the user interface and to list on the commandline
+
+This [example configuration](src/main/resources/mysvm.json)) generates this
+[Java source file](src/main/resources/AbstractMySVM.java).
 
 In case you include this artifact in your Maven project, you can add a build
 configuration that will regenerate your abstract classes using `mvn exec:java`:
