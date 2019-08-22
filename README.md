@@ -145,6 +145,7 @@ configuration that will regenerate your abstract classes using `mvn exec:java`:
 
 Click on one of the following links to get to the corresponding release page:
 
+* [2019.8.22](https://github.com/fracpete/weka-option-utils/releases/v2019.8.22)
 * [2016.6.9](https://github.com/fracpete/weka-option-utils/releases/v2016.6.9)
 
 
@@ -156,7 +157,7 @@ Add the following dependency in your `pom.xml` to include the package:
     <dependency>
       <groupId>com.github.fracpete</groupId>
       <artifactId>weka-option-utils</artifactId>
-      <version>2016.8.22</version>
+      <version>2019.8.22</version>
       <type>jar</type>
       <exclusions>
         <exclusion>
