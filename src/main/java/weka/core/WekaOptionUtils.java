@@ -13,7 +13,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * WekaOptionUtils.java
  * Copyright (C) 2015-2016 University of Waikato, Hamilton, NZ
  */
@@ -33,7 +33,6 @@ import java.util.Vector;
  * Helper class for option parsing.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaOptionUtils {
 
