@@ -636,7 +636,7 @@ public class GenerateOptionHandler
 
     // copyright
     code.append("/*\n");
-    code.append(" * " + d.name + ".java\n");
+    code.append(" * " + d.prefix + d.name + d.suffix + ".java\n");
     code.append(" * Copyright (C) " + new GregorianCalendar().get(GregorianCalendar.YEAR) + " " + d.organization + "\n");
     code.append(" */\n");
     code.append("\n");
