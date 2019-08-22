@@ -5,7 +5,7 @@
 
   <groupId>com.github.fracpete</groupId>
   <artifactId>weka-option-utils</artifactId>
-  <version>2016.8.23-SNAPSHOT</version>
+  <version>2019.8.22-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>weka-option-utils</name>
@@ -89,12 +89,17 @@
       <version>[3.7.13,)</version>
     </dependency>
 
-    <!--dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.2</version>
-      <scope>test</scope>
-    </dependency-->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.argparse4j</groupId>
+      <artifactId>argparse4j</artifactId>
+      <version>0.6.0</version>
+    </dependency>
   </dependencies>
 
   <properties>
@@ -110,8 +115,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.0.2</version>
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>1.8</source>
+            <target>1.8</target>
           </configuration>
         </plugin>
 

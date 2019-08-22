@@ -1,0 +1,33 @@
+{
+  "name": "MySVM",
+  "package": "weka.classifiers.functions",
+  "prefix": "Abstract",
+  "suffix": "",
+  "superclass": "weka.classifiers.AbstractClassifier",
+  "implement": [],
+  "author": "FracPete",
+  "organization": "University of Waikato, Hamilton, NZ",
+  "options": [
+    {
+      "property": "capacity",
+      "type": "double",
+      "flag": "capacity",
+      "default": "1.0",
+      "help": "The capacity parameter."
+    },
+    {
+      "property": "kernel",
+      "type": "weka.classifiers.smile.math.kernel.AbstractSmileKernel",
+      "flag": "kernel",
+      "default": "new weka.classifiers.smile.math.kernel.SmileGaussianKernel()",
+      "help": "The kernel to use."
+    },
+    {
+      "property": "multiClassStrategy",
+      "type": "smile.classification.SVM.Multiclass",
+      "flag": "multiclass-strategy",
+      "default": "smile.classification.SVM.Multiclass.ONE_VS_ALL",
+      "help": "The strategy to use in case of non-binary class attribute."
+    }
+  ]
+}
