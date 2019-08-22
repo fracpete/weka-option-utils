@@ -38,22 +38,22 @@ import smile.classification.SVM.Multiclass;
 public abstract class AbstractMySVM
   extends AbstractClassifier {
 
-  /** the flag for capacity. */
+  /** the flag for {@link #m_Capacity}. */
   public final static String CAPACITY = "capacity";
 
-  /** the flag for kernel. */
+  /** the flag for {@link #m_Kernel}. */
   public final static String KERNEL = "kernel";
 
-  /** the flag for multiClassStrategy. */
-  public final static String MULTICLASSSTRATEGY = "multiclass-strategy";
+  /** the flag for {@link #m_MultiClassStrategy}. */
+  public final static String MULTICLASSSTRATEGY = "multi-class-strategy";
 
-  /** The capacity parameter. */
+  /** the capacity parameter. */
   protected double m_Capacity = getDefaultCapacity();
 
-  /** The kernel to use. */
+  /** the kernel to use. */
   protected AbstractSmileKernel m_Kernel = getDefaultKernel();
 
-  /** The strategy to use in case of non-binary class attribute. */
+  /** the strategy to use in case of non-binary class attribute. */
   protected Multiclass m_MultiClassStrategy = getDefaultMultiClassStrategy();
 
   /**
@@ -111,33 +111,39 @@ public abstract class AbstractMySVM
    * The default value for capacity.
    *
    * @return the default value
+   * @see #m_Capacity
    */
   protected double getDefaultCapacity() {
     return 1.0;
   }
 
   /**
-   * Returns the current value for capacity.
+   * Returns the capacity parameter.
    *
    * @return the current value
+   * @see #m_Capacity
    */
   public double getCapacity() {
     return m_Capacity;
   }
 
   /**
-   * Sets the new value for capacity.
+   * Sets the capacity parameter.
    *
    * @param value the new value
+   * @see #m_Capacity
    */
   public void setCapacity(double value) {
-    m_Capacity = value;
+    if (value >= 0.0) {
+      m_Capacity = value;
+    }
   }
 
   /**
    * Returns the help string for capacity.
    *
    * @return the help string
+   * @see #m_Capacity
    */
   public String capacityTipText() {
     return "The capacity parameter.";
@@ -147,24 +153,27 @@ public abstract class AbstractMySVM
    * The default value for kernel.
    *
    * @return the default value
+   * @see #m_Kernel
    */
   protected AbstractSmileKernel getDefaultKernel() {
     return new weka.classifiers.smile.math.kernel.SmileGaussianKernel();
   }
 
   /**
-   * Returns the current value for kernel.
+   * Returns the kernel to use.
    *
    * @return the current value
+   * @see #m_Kernel
    */
   public AbstractSmileKernel getKernel() {
     return m_Kernel;
   }
 
   /**
-   * Sets the new value for kernel.
+   * Sets the kernel to use.
    *
    * @param value the new value
+   * @see #m_Kernel
    */
   public void setKernel(AbstractSmileKernel value) {
     m_Kernel = value;
@@ -174,6 +183,7 @@ public abstract class AbstractMySVM
    * Returns the help string for kernel.
    *
    * @return the help string
+   * @see #m_Kernel
    */
   public String kernelTipText() {
     return "The kernel to use.";
@@ -183,24 +193,27 @@ public abstract class AbstractMySVM
    * The default value for multiClassStrategy.
    *
    * @return the default value
+   * @see #m_MultiClassStrategy
    */
   protected Multiclass getDefaultMultiClassStrategy() {
     return smile.classification.SVM.Multiclass.ONE_VS_ALL;
   }
 
   /**
-   * Returns the current value for multiClassStrategy.
+   * Returns the strategy to use in case of non-binary class attribute.
    *
    * @return the current value
+   * @see #m_MultiClassStrategy
    */
   public Multiclass getMultiClassStrategy() {
     return m_MultiClassStrategy;
   }
 
   /**
-   * Sets the new value for multiClassStrategy.
+   * Sets the strategy to use in case of non-binary class attribute.
    *
    * @param value the new value
+   * @see #m_MultiClassStrategy
    */
   public void setMultiClassStrategy(Multiclass value) {
     m_MultiClassStrategy = value;
@@ -210,6 +223,7 @@ public abstract class AbstractMySVM
    * Returns the help string for multiClassStrategy.
    *
    * @return the help string
+   * @see #m_MultiClassStrategy
    */
   public String multiClassStrategyTipText() {
     return "The strategy to use in case of non-binary class attribute.";

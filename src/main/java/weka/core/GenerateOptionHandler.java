@@ -124,14 +124,42 @@ public class GenerateOptionHandler
     /** the type. */
     public String type;
 
-    /** the flag. */
-    public String flag;
+    /** the flag (optional, can be derived from property). */
+    public String flag = "";
 
     /** the default value. */
     public String defaultValue = "";
 
-    /** the help string. */
+    /** the constraint to use (optional). */
+    public String constraint = "";
+
+    /** the help string (optional). */
     public String help = "";
+
+    /**
+     * Ensures that a flag is present.
+     */
+    public void update() {
+      StringBuilder	tmp;
+      int		i;
+      char		c;
+
+      if (flag.isEmpty()) {
+        tmp = new StringBuilder();
+        for (i = 0; i < property.length(); i++) {
+          c = property.charAt(i);
+          if (Character.isUpperCase(c)) {
+            if (tmp.length() > 0)
+	      tmp.append("-");
+            tmp.append(Character.toLowerCase(c));
+	  }
+	  else {
+            tmp.append(c);
+	  }
+	}
+	flag = tmp.toString();
+      }
+    }
 
     /**
      * Outputs the option a string.
@@ -140,11 +168,13 @@ public class GenerateOptionHandler
      */
     @Override
     public String toString() {
+      update();
       return "property: " + property + "\n"
 	+ "type: " + type + "\n"
 	+ "flag: " + flag + "\n"
 	+ "default: " + defaultValue + "\n"
-	+ "help: " + help;
+	+ "constraint: " + (constraint.isEmpty() ? "-none-" : constraint) + "\n"
+	+ "help: " + (help.isEmpty() ? "-none-" : help);
     }
   }
 
@@ -180,6 +210,14 @@ public class GenerateOptionHandler
 
     /** the options. */
     public List<Option> options = new ArrayList<>();
+
+    /**
+     * Ensures that all options are updated.
+     */
+    public void update() {
+      for (Option o: options)
+        o.update();
+    }
 
     /**
      * Returns a string representation of the definition.
@@ -453,7 +491,7 @@ public class GenerateOptionHandler
    * @param config 	the configuration file to load
    * @return		null if successful, otherwise error message
    */
-  protected String loadJSON(File config) {
+  protected String loadConfiguration(File config) {
     String		result;
     String		msg;
     JsonParser		parser;
@@ -517,13 +555,17 @@ public class GenerateOptionHandler
           opt              = new Option();
           opt.property     = option.get("property").getAsString();
           opt.type         = option.get("type").getAsString();
-          opt.flag         = option.get("flag").getAsString();
           opt.defaultValue = option.get("default").getAsString();
+          if (option.has("flag"))
+	    opt.flag = option.get("flag").getAsString();
+          if (option.has("constraint"))
+	    opt.constraint = option.get("constraint").getAsString();
           if (option.has("help"))
             opt.help = option.get("help").getAsString();
           def.options.add(opt);
 	}
       }
+      def.update();
       m_Definition = def;
       if (getVerbose())
         getLogger().fine("Parsed definition:\n" + m_Definition);
@@ -546,13 +588,23 @@ public class GenerateOptionHandler
   }
 
   /**
-   * Turns the first character of the property to uppercase.
+   * Turns the first character of the string to uppercase.
    *
-   * @param property	the property to process
+   * @param str		the string to process
    * @return		the updated name
    */
-  protected String upFirst(String property) {
-    return property.substring(0, 1).toUpperCase() + property.substring(1);
+  protected String upFirst(String str) {
+    return str.substring(0, 1).toUpperCase() + str.substring(1);
+  }
+
+  /**
+   * Turns the first character of the string to lowercase.
+   *
+   * @param str		the string to process
+   * @return		the updated name
+   */
+  protected String lowFirst(String str) {
+    return str.substring(0, 1).toLowerCase() + str.substring(1);
   }
 
   /**
@@ -638,14 +690,14 @@ public class GenerateOptionHandler
     // flags
     for (Option o: d.options) {
       code.append("\n");
-      code.append("  /** the flag for " + o.property + ". */\n");
+      code.append("  /** the flag for {@link #m_" + upFirst(o.property) + "}. */\n");
       code.append("  public final static String " + o.property.toUpperCase() + " = \"" + o.flag + "\";\n");
     }
 
     // members
     for (Option o: d.options) {
       code.append("\n");
-      code.append("  /** " + (o.help.isEmpty() ? o.property : o.help + " */\n"));
+      code.append("  /** " + (o.help.isEmpty() ? o.property : lowFirst(o.help) + " */\n"));
       code.append("  protected " + trimClass(o.type) + " m_" + upFirst(o.property) + " = getDefault" + upFirst(o.property) + "();\n");
     }
 
@@ -720,6 +772,7 @@ public class GenerateOptionHandler
       code.append("   * The default value for " + o.property + ".\n");
       code.append("   *\n");
       code.append("   * @return the default value\n");
+      code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  protected " + trimClass(o.type) + " getDefault" + upFirst(o.property) + "() {\n");
       code.append("    return " + o.defaultValue + ";\n");
@@ -728,9 +781,13 @@ public class GenerateOptionHandler
       // get
       code.append("\n");
       code.append("  /**\n");
-      code.append("   * Returns the current value for " + o.property + ".\n");
+      if (!o.help.isEmpty())
+	code.append("   * Returns " + lowFirst(o.help) + "\n");
+      else
+	code.append("   * Returns the current value for " + o.property + ".\n");
       code.append("   *\n");
       code.append("   * @return the current value\n");
+      code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public " + trimClass(o.type) + " get" + upFirst(o.property) + "() {\n");
       code.append("    return m_" + upFirst(o.property) + ";\n");
@@ -739,12 +796,23 @@ public class GenerateOptionHandler
       // set
       code.append("\n");
       code.append("  /**\n");
-      code.append("   * Sets the new value for " + o.property + ".\n");
+      if (!o.help.isEmpty())
+	code.append("   * Sets " + lowFirst(o.help) + "\n");
+      else
+	code.append("   * Sets the new value for " + o.property + ".\n");
       code.append("   *\n");
       code.append("   * @param value the new value\n");
+      code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public void set" + upFirst(o.property) + "(" + trimClass(o.type) + " value) {\n");
-      code.append("    m_" + upFirst(o.property) + " = value;\n");
+      if (!o.constraint.isEmpty()) {
+	code.append("    if (" + o.constraint + ") {\n");
+	code.append("      m_" + upFirst(o.property) + " = value;\n");
+	code.append("    }\n");
+      }
+      else {
+	code.append("    m_" + upFirst(o.property) + " = value;\n");
+      }
       code.append("  }\n");
 
       // tiptext
@@ -753,6 +821,7 @@ public class GenerateOptionHandler
       code.append("   * Returns the help string for " + o.property + ".\n");
       code.append("   *\n");
       code.append("   * @return the help string\n");
+      code.append("   * @see #m_" + upFirst(o.property) + "\n");
       code.append("   */\n");
       code.append("  public String " + o.property + "TipText() {\n");
       code.append("    return \"" + upFirst(o.help) + "\";\n");
@@ -806,7 +875,7 @@ public class GenerateOptionHandler
 
     for (File config: m_Configurations) {
       m_Definition = null;
-      result       = loadJSON(config);
+      result       = loadConfiguration(config);
       if (result == null)
 	result = generate();
       if (result != null)

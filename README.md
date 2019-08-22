@@ -97,8 +97,13 @@ The JSON file structure is very simple:
 An `option` itself has the following properties:
 * `property`: the Java Bean property name (starts with lower case letter), eg `capacity`
 * `type`: the string denoting the type (primitive or class), eg `double`
-* `flag`: the string to use as command-line option (all lower case, no leading `-`), eg `capacity`
-* `default`: the string with the default value, eg `1.0` or `new some.pkg.SomeClass()`
+* `flag` (optional): the string to use as command-line option (all lower case, no leading `-`), 
+  eg `capacity`; if left empty, will get automatically generated from the property name
+  (`multiClassStrategy` -> `multi-class-strategy`)
+* `default`: the Java code snippet string with the default value, eg `1.0` or `new some.pkg.SomeClass()`
+* `constraint` (optional): the Java code snippet representing a boolean evaluation to 
+  guard accepting the value presented to the `set` method (the parameter name used by 
+  the `set` method is always `value`), eg `value >= 0`
 * `help`: the help string to display in the user interface and to list on the commandline
 
 This [example configuration](src/main/resources/mysvm.json) generates this
