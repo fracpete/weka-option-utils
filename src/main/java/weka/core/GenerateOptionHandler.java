@@ -217,7 +217,7 @@ public class GenerateOptionHandler
   protected Logger m_Logger;
 
   /** the JSON configuration file. */
-  protected File m_Configuration;
+  protected List<File> m_Configurations;
 
   /** the output directory. */
   protected File m_OutputDir;
@@ -233,7 +233,7 @@ public class GenerateOptionHandler
    */
   public GenerateOptionHandler() {
     m_Definition = null;
-    setConfiguration(new File("."));
+    setConfigurations(new ArrayList<>());
     setOutputDir(new File("."));
     setVerbose(false);
   }
@@ -250,21 +250,21 @@ public class GenerateOptionHandler
   }
 
   /**
-   * Sets the configuration file.
+   * Sets the configuration files.
    *
-   * @param value	the file
+   * @param value	the files
    */
-  public void setConfiguration(File value) {
-    m_Configuration = value;
+  public void setConfigurations(List<File> value) {
+    m_Configurations = value;
   }
 
   /**
-   * Returns the configuration file.
+   * Returns the configuration files.
    *
-   * @return		the file
+   * @return		the files
    */
-  public File getConfiguration() {
-    return m_Configuration;
+  public List<File> getConfigurations() {
+    return m_Configurations;
   }
 
   /**
@@ -319,6 +319,7 @@ public class GenerateOptionHandler
       .type(Arguments.fileType().verifyExists())
       .setDefault(new File("."))
       .required(true)
+      .nargs("+")
       .dest("configuration")
       .help("The JSON file with the class/option specifications.");
     parser.addArgument("--output-dir")
@@ -341,7 +342,7 @@ public class GenerateOptionHandler
       return false;
     }
 
-    setConfiguration(ns.get("configuration"));
+    setConfigurations(ns.getList("configuration"));
     setOutputDir(ns.get("outputdir"));
     setVerbose(ns.getBoolean("verbose"));
 
@@ -389,9 +390,10 @@ public class GenerateOptionHandler
   /**
    * Loads the JSON configuration and checks it.
    *
+   * @param config 	the configuration file to load
    * @return		null if successful, otherwise error message
    */
-  protected String loadJSON() {
+  protected String loadJSON(File config) {
     String		result;
     String		msg;
     JsonParser		parser;
@@ -405,15 +407,14 @@ public class GenerateOptionHandler
     Option		opt;
     int			i;
 
-    if (getVerbose())
-      getLogger().info("Reading configuration: " + m_Configuration);
+    getLogger().info("Reading configuration: " + config);
 
     result  = null;
     freader = null;
     breader = null;
     obj     = null;
     try {
-      freader = new FileReader(m_Configuration);
+      freader = new FileReader(config);
       breader = new BufferedReader(freader);
       parser  = new JsonParser();
       json    = parser.parse(breader);
@@ -422,7 +423,7 @@ public class GenerateOptionHandler
       obj = (JsonObject) json;
     }
     catch (Exception e) {
-      msg    = "Failed to parse configuration: " + m_Configuration;
+      msg    = "Failed to parse configuration: " + m_Configurations;
       result = msg + "\n" + e;
       getLogger().log(Level.SEVERE, msg, e);
     }
@@ -465,7 +466,7 @@ public class GenerateOptionHandler
       }
       m_Definition = def;
       if (getVerbose())
-        getLogger().info("Parsed definition:\n" + m_Definition);
+        getLogger().fine("Parsed definition:\n" + m_Definition);
     }
 
     return result;
@@ -704,8 +705,7 @@ public class GenerateOptionHandler
     fwriter = null;
     bwriter = null;
     output  = new File(m_OutputDir.getAbsolutePath() + File.separator + d.prefix + d.name + d.suffix + ".java");
-    if (getVerbose())
-      getLogger().info("Writing generated code to: " + output);
+    getLogger().info("Writing generated code to: " + output);
     try {
       fwriter = new FileWriter(output);
       bwriter = new BufferedWriter(fwriter);
@@ -732,11 +732,16 @@ public class GenerateOptionHandler
   public String execute() {
     String	result;
 
-    m_Definition = null;
+    result = null;
 
-    result = loadJSON();
-    if (result == null)
-      result = generate();
+    for (File config: m_Configurations) {
+      m_Definition = null;
+      result       = loadJSON(config);
+      if (result == null)
+	result = generate();
+      if (result != null)
+        break;
+    }
 
     return result;
   }
