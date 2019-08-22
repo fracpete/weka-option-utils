@@ -222,6 +222,12 @@ public class GenerateOptionHandler
   /** the output directory. */
   protected File m_OutputDir;
 
+  /** whether to add the package structure to the output filename. */
+  protected boolean m_AddPackageStructure;
+
+  /** whether to generate the directories. */
+  protected boolean m_GenerateDirs;
+
   /** whether to be verbose. */
   protected boolean m_Verbose;
 
@@ -235,6 +241,8 @@ public class GenerateOptionHandler
     m_Definition = null;
     setConfigurations(new ArrayList<>());
     setOutputDir(new File("."));
+    setAddPackageStructure(false);
+    setGenerateDirs(false);
     setVerbose(false);
   }
 
@@ -286,6 +294,42 @@ public class GenerateOptionHandler
   }
 
   /**
+   * Sets whether to add the package structure to the output filename.
+   *
+   * @param value	true if to add
+   */
+  public void setAddPackageStructure(boolean value) {
+    m_AddPackageStructure = value;
+  }
+
+  /**
+   * Returns whether to the package structure to the output filename.
+   *
+   * @return		true if to add
+   */
+  public boolean getAddPackageStructure() {
+    return m_AddPackageStructure;
+  }
+
+  /**
+   * Sets whether to be generate output dirs.
+   *
+   * @param value	true if generate output dirs
+   */
+  public void setGenerateDirs(boolean value) {
+    m_GenerateDirs = value;
+  }
+
+  /**
+   * Returns whether to be generate output dirs.
+   *
+   * @return		true if generate output dirs
+   */
+  public boolean getGenerateDirs() {
+    return m_GenerateDirs;
+  }
+
+  /**
    * Sets whether to be verbose in the processing.
    *
    * @param value	true if verbose
@@ -316,6 +360,7 @@ public class GenerateOptionHandler
 
     parser = ArgumentParsers.newArgumentParser(getClass().getName());
     parser.addArgument("--configuration")
+      .metavar("JSON")
       .type(Arguments.fileType().verifyExists())
       .setDefault(new File("."))
       .required(true)
@@ -323,10 +368,23 @@ public class GenerateOptionHandler
       .dest("configuration")
       .help("The JSON file with the class/option specifications.");
     parser.addArgument("--output-dir")
+      .metavar("DIR")
       .type(Arguments.fileType().verifyExists().verifyIsDirectory())
       .dest("outputdir")
       .required(true)
-      .help("The output directory for the generated class.");
+      .help("The output directory for the generated class, above the top-level package.");
+    parser.addArgument("--add-package-structure")
+      .type(Boolean.class)
+      .dest("addpackagestructure")
+      .required(false)
+      .action(Arguments.storeTrue())
+      .help("If enabled, the package structure gets added to the output filename.");
+    parser.addArgument("--generate-dirs")
+      .type(Boolean.class)
+      .dest("generatedirs")
+      .required(false)
+      .action(Arguments.storeTrue())
+      .help("If enabled, any missing output directories get generated.");
     parser.addArgument("--verbose")
       .type(Boolean.class)
       .dest("verbose")
@@ -344,6 +402,8 @@ public class GenerateOptionHandler
 
     setConfigurations(ns.getList("configuration"));
     setOutputDir(ns.get("outputdir"));
+    setAddPackageStructure(ns.getBoolean("addpackagestructure"));
+    setGenerateDirs(ns.getBoolean("generatedirs"));
     setVerbose(ns.getBoolean("verbose"));
 
     return true;
@@ -507,9 +567,10 @@ public class GenerateOptionHandler
     FileWriter		fwriter;
     BufferedWriter	bwriter;
     String		msg;
-    File		output;
+    File 		outFile;
+    String		outStr;
     int			i;
-    boolean fromSuper;
+    boolean 		fromSuper;
 
     result = null;
     code   = new StringBuilder();
@@ -529,7 +590,7 @@ public class GenerateOptionHandler
 
     // package
     if (!d.pkg.isEmpty()) {
-      code.append("package " + d.pkg + "\n");
+      code.append("package " + d.pkg + ";\n");
       code.append("\n");
     }
 
@@ -642,7 +703,7 @@ public class GenerateOptionHandler
     code.append("   * @return an array of strings suitable for passing to setOptions\n");
     code.append("   */\n");
     code.append("  @Override\n");
-    code.append("  public void setOptions(String[] options) throws Exception {\n");
+    code.append("  public String[] getOptions() {\n");
     code.append("    List<String> result = new ArrayList<String>();\n");
     for (Option o: d.options)
       code.append("    WekaOptionUtils.add(result, " + o.property.toUpperCase() + ", get" + upFirst(o.property) + "());\n");
@@ -693,7 +754,7 @@ public class GenerateOptionHandler
       code.append("   *\n");
       code.append("   * @return the help string\n");
       code.append("   */\n");
-      code.append("  public String " + o.property + "TipText(" + trimClass(o.type) + " value) {\n");
+      code.append("  public String " + o.property + "TipText() {\n");
       code.append("    return \"" + upFirst(o.help) + "\";\n");
       code.append("  }\n");
     }
@@ -704,15 +765,24 @@ public class GenerateOptionHandler
     // output code
     fwriter = null;
     bwriter = null;
-    output  = new File(m_OutputDir.getAbsolutePath() + File.separator + d.prefix + d.name + d.suffix + ".java");
-    getLogger().info("Writing generated code to: " + output);
+    outStr  = m_OutputDir.getAbsolutePath();
+    if (m_AddPackageStructure)
+      outStr += File.separator + d.pkg.replace(".", File.separator);
+    outStr += File.separator + d.prefix + d.name + d.suffix + ".java";
+    outFile = new File(outStr);
+    if (m_GenerateDirs && !outFile.getParentFile().exists()) {
+      getLogger().info("Generating output directory: " + outFile.getParentFile());
+      if (!outFile.getParentFile().mkdirs())
+        getLogger().severe("Failed to generate output directory: " + outFile.getParentFile());
+    }
+    getLogger().info("Writing generated code to: " + outFile);
     try {
-      fwriter = new FileWriter(output);
+      fwriter = new FileWriter(outFile);
       bwriter = new BufferedWriter(fwriter);
       bwriter.write(code.toString());
     }
     catch (Exception e) {
-      msg    = "Failed to output generated code to: " + output;
+      msg    = "Failed to output generated code to: " + outFile;
       result = msg + "\n" + e;
       getLogger().log(Level.SEVERE, msg, e);
     }
