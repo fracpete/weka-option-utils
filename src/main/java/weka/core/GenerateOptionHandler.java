@@ -581,10 +581,38 @@ public class GenerateOptionHandler
    * @return		the updated classname
    */
   protected String trimClass(String clsname) {
-    if (clsname.contains("."))
-      return clsname.substring(clsname.lastIndexOf('.') + 1);
-    else
-      return clsname;
+    return trimClass(clsname, true);
+  }
+
+  /**
+   * Extracts the last part of the classname.
+   *
+   * @param clsname	the classname to trim
+   * @param stripGenerics 	whether to strip generics as well
+   * @return		the updated classname
+   */
+  protected String trimClass(String clsname, boolean stripGenerics) {
+    if (clsname.contains("<") && stripGenerics)
+      clsname = clsname.substring(0, clsname.indexOf("<"));
+    if (clsname.contains(".")) {
+      if (clsname.contains("<"))
+	clsname = clsname.substring(clsname.lastIndexOf('.', clsname.indexOf('<')) + 1);
+      else
+	clsname = clsname.substring(clsname.lastIndexOf('.') + 1);
+    }
+    return clsname;
+  }
+
+  /**
+   * Turns the classname into an import statement.
+   *
+   * @param clsname	the class to convert
+   * @return		the import statement
+   */
+  protected String toImport(String clsname) {
+    if (clsname.contains("<"))
+      clsname = clsname.substring(0, clsname.indexOf("<"));
+    return "import " + clsname + ";";
   }
 
   /**
@@ -648,22 +676,22 @@ public class GenerateOptionHandler
     }
 
     // imports
-    code.append("import weka.core.Utils;\n");
-    code.append("import weka.core.WekaOptionUtils;\n");
+    code.append(toImport("weka.core.Utils")).append("\n");
+    code.append(toImport("weka.core.WekaOptionUtils")).append("\n");
     if (!d.superclass.isEmpty())
-      code.append("import " + d.superclass + ";\n");
+      code.append(toImport(d.superclass)).append("\n");
     for (String intf: d.implement) {
       if (intf.equals("weka.core.OptionHandler"))
         fromSuper = false;
-      code.append("import " + intf + ";\n");
+      code.append(toImport(intf)).append("\n");
     }
-    code.append("import java.util.ArrayList;\n");
-    code.append("import java.util.Enumeration;\n");
-    code.append("import java.util.List;\n");
-    code.append("import java.util.Vector;\n");
+    code.append(toImport("java.util.ArrayList")).append("\n");
+    code.append(toImport("java.util.Enumeration")).append("\n");
+    code.append(toImport("java.util.List")).append("\n");
+    code.append(toImport("java.util.Vector")).append("\n");
     for (Option o : d.options) {
       if (o.type.contains("."))
-	code.append("import " + o.type + ";\n");
+	code.append(toImport(o.type)).append("\n");
     }
     code.append("\n");
 
@@ -677,13 +705,13 @@ public class GenerateOptionHandler
     // class
     code.append("public abstract class " + d.prefix + d.name + d.suffix);
     if (!d.superclass.isEmpty())
-      code.append("\n  extends " + trimClass(d.superclass));
+      code.append("\n  extends " + trimClass(d.superclass, false));
     if (!d.implement.isEmpty()) {
       code.append("\n  implements ");
       for (i = 0; i < d.implement.size(); i++) {
         if (i > 0)
           code.append(", ");
-        code.append(trimClass(d.implement.get(i)));
+        code.append(trimClass(d.implement.get(i), false));
       }
     }
     code.append(" {\n");

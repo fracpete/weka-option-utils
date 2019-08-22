@@ -14,7 +14,7 @@
  */
 
 /*
- * MySVM.java
+ * AbstractMySVM.java
  * Copyright (C) 2019 University of Waikato, Hamilton, NZ
  */
 
