@@ -33,3 +33,4 @@ Maven Central
 * After the artifacts show up on central, update the artifact version used
   in the dependency fragment of the `README.md` file
 
+* Create a new release on Github and upload `-javadoc.jar`, `-sources.jar`, `.jar` and `.pom` from `target` dir
