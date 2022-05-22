@@ -16,6 +16,8 @@ Preparation
 Maven Central
 -------------
 
+* Switch to Java 8 (`. java8`)
+
 * Run the following command to deploy the artifact:
 
   ```
