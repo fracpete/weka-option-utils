@@ -15,7 +15,7 @@
 
 /*
  * GenerateOptionHandler.java
- * Copyright (C) 2019 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2019-2022 University of Waikato, Hamilton, NZ
  */
 
 package weka.core;
@@ -396,7 +396,7 @@ public class GenerateOptionHandler
     ArgumentParser parser;
     Namespace ns;
 
-    parser = ArgumentParsers.newArgumentParser(getClass().getName());
+    parser = ArgumentParsers.newFor(getClass().getName()).build();
     parser.addArgument("--configuration")
       .metavar("JSON")
       .type(Arguments.fileType().verifyExists())

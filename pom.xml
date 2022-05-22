@@ -38,8 +38,8 @@
   </parent>
 
   <scm>
-    <connection>scm:git:https://github.com/fracpete/weka-option-utils</connection>
-    <developerConnection>scm:git:https://github.com/fracpete/weka-option-utils</developerConnection>
+    <connection>scm:git:ssh://git@github.com/fracpete/weka-option-utils</connection>
+    <developerConnection>scm:git:ssh://git@github.com/fracpete/weka-option-utils</developerConnection>
     <url>https://github.com/fracpete/weka-option-utils</url>
     <tag>HEAD</tag>
   </scm>
@@ -98,7 +98,7 @@
     <dependency>
       <groupId>net.sourceforge.argparse4j</groupId>
       <artifactId>argparse4j</artifactId>
-      <version>0.6.0</version>
+      <version>0.9.0</version>
     </dependency>
   </dependencies>
 
