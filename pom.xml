@@ -5,7 +5,7 @@
 
   <groupId>com.github.fracpete</groupId>
   <artifactId>weka-option-utils</artifactId>
-  <version>2019.8.26-SNAPSHOT</version>
+  <version>2022.5.23-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>weka-option-utils</name>
